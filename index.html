@@ -29,17 +29,19 @@
     --card-border: rgba(201,162,39,0.28);
     --hairline: rgba(234,230,214,0.14);
     --shadow: rgba(0,0,0,0.55);
+    --card-shadow: none;
   }
 
   [data-theme="light"]{
     --bg:#EDE8D8;
-    --bg-alt:#E2DCC7;
+    --bg-alt:#DFD8C0;
     --text: var(--charcoal);
-    --text-dim:#5A5748;
-    --card-bg: rgba(75,83,32,0.07);
-    --card-border: rgba(75,83,32,0.30);
-    --hairline: rgba(28,26,21,0.14);
-    --shadow: rgba(28,26,21,0.18);
+    --text-dim:#4A4738;
+    --card-bg: rgba(75,83,32,0.10);
+    --card-border: rgba(75,83,32,0.42);
+    --hairline: rgba(28,26,21,0.22);
+    --shadow: rgba(28,26,21,0.28);
+    --card-shadow: 0 6px 18px rgba(28,26,21,0.10);
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -73,16 +75,18 @@
   .texture{
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background:
-      repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 60px),
-      radial-gradient(ellipse at 20% -10%, rgba(75,83,32,0.35), transparent 55%),
-      radial-gradient(ellipse at 90% 10%, rgba(122,31,31,0.14), transparent 45%);
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 60px),
+      radial-gradient(ellipse at 20% -10%, rgba(75,83,32,0.5), transparent 55%),
+      radial-gradient(ellipse at 90% 10%, rgba(122,31,31,0.22), transparent 45%),
+      radial-gradient(ellipse at 50% 100%, rgba(201,162,39,0.10), transparent 50%);
     opacity: 1;
   }
   [data-theme="light"] .texture{
     background:
-      repeating-linear-gradient(115deg, rgba(28,26,21,0.02) 0 2px, transparent 2px 60px),
-      radial-gradient(ellipse at 20% -10%, rgba(75,83,32,0.10), transparent 55%),
-      radial-gradient(ellipse at 90% 10%, rgba(122,31,31,0.06), transparent 45%);
+      repeating-linear-gradient(115deg, rgba(75,83,32,0.05) 0 2px, transparent 2px 60px),
+      radial-gradient(ellipse at 20% -10%, rgba(75,83,32,0.20), transparent 55%),
+      radial-gradient(ellipse at 90% 10%, rgba(122,31,31,0.12), transparent 45%),
+      radial-gradient(ellipse at 50% 100%, rgba(201,162,39,0.16), transparent 50%);
   }
 
   .wrap{ position:relative; z-index:1; }
@@ -195,6 +199,7 @@
   .pillar{
     border:1px solid var(--card-border); background: var(--card-bg);
     padding: 34px 28px; border-radius:3px; position:relative; overflow:hidden;
+    box-shadow: var(--card-shadow);
   }
   .pillar::before{
     content:""; position:absolute; top:0; left:0; width:4px; height:100%; background: var(--olive-soft);
@@ -211,6 +216,7 @@
   .hub-card{
     background: var(--card-bg); border:1px solid var(--card-border); border-radius:3px;
     padding:30px 24px; transition: transform .25s ease, border-color .25s ease;
+    box-shadow: var(--card-shadow);
   }
   .hub-card:hover{ transform: translateY(-6px); border-color: var(--brass); }
   .hub-icon{ width:38px; height:38px; margin-bottom:18px; }
@@ -241,8 +247,21 @@
     font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.18em;
     color: var(--blood); text-transform:uppercase;
   }
+  .tag-photo{
+    width:84px; height:84px; margin: 16px auto 14px; border-radius:50%;
+    overflow:hidden; position:relative;
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--brass), 0 6px 14px rgba(0,0,0,0.3);
+  }
+  .tag-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .tag-photo-fallback{
+    display:none; width:100%; height:100%; align-items:center; justify-content:center;
+    background: linear-gradient(160deg, var(--olive-soft), var(--olive-deep));
+    color: var(--brass-bright); font-family:'JetBrains Mono', monospace; font-weight:700; font-size:1.1rem;
+    letter-spacing:0.05em;
+  }
   .tag .name{
-    margin-top:14px; font-family:'Oswald', sans-serif; font-weight:600; font-size:1.25rem;
+    margin-top:0; font-family:'Oswald', sans-serif; font-weight:600; font-size:1.25rem;
     letter-spacing:0.03em; text-transform:uppercase;
   }
   .tag .serial{
@@ -404,24 +423,40 @@
     <div class="tags-row">
       <div class="tag">
         <div class="role">Founder · Owner &amp; Dev</div>
+        <div class="tag-photo">
+          <img src="hub-cmd-001.png" alt="Tommy Gurro" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="tag-photo-fallback">TG</div>
+        </div>
         <div class="name">Tommy Gurro</div>
         <hr>
         <div class="serial">HUB · CMD · 001</div>
       </div>
       <div class="tag">
         <div class="role">Co-Owner</div>
+        <div class="tag-photo">
+          <img src="hub-cmd-002.png" alt="jaxon39959" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="tag-photo-fallback">JX</div>
+        </div>
         <div class="name">jaxon39959</div>
         <hr>
         <div class="serial">HUB · CMD · 002</div>
       </div>
       <div class="tag">
         <div class="role">Core Team</div>
+        <div class="tag-photo">
+          <img src="hub-ops-003.png" alt="Silverback" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="tag-photo-fallback">SB</div>
+        </div>
         <div class="name">Silverback</div>
         <hr>
         <div class="serial">HUB · OPS · 003</div>
       </div>
       <div class="tag">
         <div class="role">Core Team</div>
+        <div class="tag-photo">
+          <img src="hub-ops-004.png" alt="Mr. White" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="tag-photo-fallback">MW</div>
+        </div>
         <div class="name">Mr. White</div>
         <hr>
         <div class="serial">HUB · OPS · 004</div>
