@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARMY HUB · Forge the Next Generation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0C08;
+    --ink-2:#14170F;
+    --olive:#4B5320;
+    --olive-deep:#2A2E13;
+    --olive-soft:#5F6B2E;
+    --brass:#C9A227;
+    --brass-bright:#E7C15A;
+    --blood:#7A1F1F;
+    --bone:#EAE6D6;
+    --bone-dim:#B9B6A4;
+    --steel:#8A9182;
+    --charcoal:#1C1A15;
+
+    --bg: var(--ink);
+    --bg-alt: var(--ink-2);
+    --text: var(--bone);
+    --text-dim: var(--bone-dim);
+    --card-bg: rgba(75,83,32,0.14);
+    --card-border: rgba(201,162,39,0.28);
+    --hairline: rgba(234,230,214,0.14);
+    --shadow: rgba(0,0,0,0.55);
+  }
+
+  [data-theme="light"]{
+    --bg:#EDE8D8;
+    --bg-alt:#E2DCC7;
+    --text: var(--charcoal);
+    --text-dim:#5A5748;
+    --card-bg: rgba(75,83,32,0.07);
+    --card-border: rgba(75,83,32,0.30);
+    --hairline: rgba(28,26,21,0.14);
+    --shadow: rgba(28,26,21,0.18);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family:'Source Sans 3', sans-serif;
+    transition: background .4s ease, color .4s ease;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    letter-spacing:0.02em;
+    text-transform:uppercase;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  button{font-family:inherit; cursor:pointer;}
+
+  ::selection{ background: var(--brass); color: var(--ink); }
+
+  /* ---------- texture backdrop ---------- */
+  .texture{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 60px),
+      radial-gradient(ellipse at 20% -10%, rgba(75,83,32,0.35), transparent 55%),
+      radial-gradient(ellipse at 90% 10%, rgba(122,31,31,0.14), transparent 45%);
+    opacity: 1;
+  }
+  [data-theme="light"] .texture{
+    background:
+      repeating-linear-gradient(115deg, rgba(28,26,21,0.02) 0 2px, transparent 2px 60px),
+      radial-gradient(ellipse at 20% -10%, rgba(75,83,32,0.10), transparent 55%),
+      radial-gradient(ellipse at 90% 10%, rgba(122,31,31,0.06), transparent 45%);
+  }
+
+  .wrap{ position:relative; z-index:1; }
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 5vw;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{ width:34px; height:34px; object-fit:contain; display:block; }
+  .brand-name{ font-size:1.1rem; font-weight:600; letter-spacing:0.12em; }
+  .brand-name b{ color: var(--brass); }
+
+  nav.links{ display:flex; gap:34px; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase; }
+  nav.links a{ position:relative; color: var(--text-dim); transition: color .25s; }
+  nav.links a:hover, nav.links a:focus-visible{ color: var(--brass-bright); }
+  nav.links a::after{
+    content:""; position:absolute; left:0; bottom:-6px; width:0; height:2px; background: var(--brass);
+    transition: width .25s ease;
+  }
+  nav.links a:hover::after{ width:100%; }
+
+  .header-right{ display:flex; align-items:center; gap:22px; }
+
+  .theme-toggle{
+    width:52px; height:28px; border-radius:20px;
+    background: var(--olive-deep); border:1px solid var(--card-border);
+    position:relative; padding:0;
+  }
+  .theme-toggle::before{
+    content:"";
+    position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%;
+    background: var(--brass); transition: transform .3s ease;
+  }
+  [data-theme="light"] .theme-toggle::before{ transform: translateX(24px); }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding: 12px 24px; font-size:0.78rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    border-radius:2px; border:1px solid transparent;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:focus-visible{ outline:2px solid var(--brass-bright); outline-offset:3px; }
+  .btn-primary{
+    background: linear-gradient(160deg, var(--brass-bright), var(--brass));
+    color: var(--ink); box-shadow: 0 6px 18px var(--shadow);
+  }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 10px 26px var(--shadow); }
+  .btn-ghost{
+    background:transparent; border-color: var(--card-border); color: var(--text);
+  }
+  .btn-ghost:hover{ border-color: var(--brass); color: var(--brass-bright); }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height: 92vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding: 10vh 6vw 8vh; position:relative;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem; letter-spacing:0.35em;
+    color: var(--brass); margin-bottom: 22px;
+  }
+  .hero h1{
+    font-size: clamp(2.6rem, 7vw, 6.2rem); line-height:0.98; font-weight:700;
+    max-width: 16ch;
+  }
+  .hero h1 .accent{ color: var(--brass); }
+  .hero p.sub{
+    margin-top: 26px; max-width: 46ch; font-size:1.08rem; color: var(--text-dim); line-height:1.6;
+  }
+  .hero-ctas{ display:flex; gap:18px; margin-top:44px; flex-wrap:wrap; justify-content:center; }
+
+  .hero-tags{
+    display:flex; gap:28px; margin-top:64px; flex-wrap:wrap; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.14em; color: var(--steel);
+  }
+  .hero-tags span{ display:flex; align-items:center; gap:8px; }
+  .hero-tags .dot{ width:6px; height:6px; background: var(--brass); border-radius:50%; }
+
+  /* ---------- section shell ---------- */
+  section{ padding: 8vh 6vw; position:relative; }
+  .section-head{ max-width: 640px; margin: 0 auto 56px; text-align:center; }
+  .section-head .eyebrow{ margin-bottom:14px; }
+  .section-head h2{ font-size: clamp(1.8rem, 4vw, 2.6rem); }
+  .section-head p{ margin-top:16px; color: var(--text-dim); line-height:1.65; }
+
+  /* ---------- mission emblem ---------- */
+  .mission-emblem-frame{
+    width:150px; height:150px; margin: 0 auto 28px;
+    border-radius:50%; padding:14px;
+    background: radial-gradient(circle at 50% 40%, var(--card-bg), transparent 70%);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 0 0 6px var(--bg), 0 0 40px rgba(201,162,39,0.18);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mission-emblem-frame img{
+    width:100%; height:100%; object-fit:contain;
+  }
+
+  /* ---------- mission pillars ---------- */
+  .pillars{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap:26px; max-width:1100px; margin:0 auto;
+  }
+  .pillar{
+    border:1px solid var(--card-border); background: var(--card-bg);
+    padding: 34px 28px; border-radius:3px; position:relative; overflow:hidden;
+  }
+  .pillar::before{
+    content:""; position:absolute; top:0; left:0; width:4px; height:100%; background: var(--olive-soft);
+  }
+  .pillar .num{ font-family:'JetBrains Mono', monospace; font-size:0.75rem; color: var(--brass); letter-spacing:0.2em; }
+  .pillar h3{ margin-top:14px; font-size:1.15rem; font-weight:500; letter-spacing:0.06em; }
+  .pillar p{ margin-top:12px; color: var(--text-dim); font-size:0.92rem; line-height:1.6; }
+
+  /* ---------- hub feature grid ---------- */
+  #hub{ background: linear-gradient(180deg, transparent, var(--bg-alt) 12%, var(--bg-alt) 88%, transparent); }
+  .hub-grid{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:22px; max-width:1200px; margin:0 auto;
+  }
+  .hub-card{
+    background: var(--card-bg); border:1px solid var(--card-border); border-radius:3px;
+    padding:30px 24px; transition: transform .25s ease, border-color .25s ease;
+  }
+  .hub-card:hover{ transform: translateY(-6px); border-color: var(--brass); }
+  .hub-icon{ width:38px; height:38px; margin-bottom:18px; }
+  .hub-card h3{ font-size:1.02rem; font-weight:500; letter-spacing:0.05em; }
+  .hub-card p{ margin-top:10px; font-size:0.88rem; color: var(--text-dim); line-height:1.55; }
+
+  /* ---------- command staff / dog tags ---------- */
+  .tags-row{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:30px; max-width:1200px; margin:0 auto;
+  }
+  .tag{
+    position:relative; padding: 40px 22px 26px; text-align:center;
+    background: linear-gradient(160deg, var(--steel) 0%, var(--bone-dim) 45%, var(--steel) 100%);
+    border-radius: 14px; color: var(--charcoal);
+    box-shadow: 0 14px 28px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.5);
+    transition: transform .3s ease;
+  }
+  [data-theme="light"] .tag{ color:#1C1A15; }
+  .tag:hover{ transform: rotate(-2deg) translateY(-4px); }
+  .tag:nth-child(even):hover{ transform: rotate(2deg) translateY(-4px); }
+  .tag::before{
+    content:""; position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    width:16px; height:16px; border-radius:50%;
+    background: var(--bg);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .tag .role{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.18em;
+    color: var(--blood); text-transform:uppercase;
+  }
+  .tag .name{
+    margin-top:14px; font-family:'Oswald', sans-serif; font-weight:600; font-size:1.25rem;
+    letter-spacing:0.03em; text-transform:uppercase;
+  }
+  .tag .serial{
+    margin-top:10px; font-family:'JetBrains Mono', monospace; font-size:0.7rem;
+    color: rgba(28,26,21,0.55); letter-spacing:0.08em;
+  }
+  .tag hr{ border:none; border-top:1px dashed rgba(28,26,21,0.3); margin:14px 0; }
+
+  /* ---------- CTA banner ---------- */
+  .cta-banner{
+    max-width:1100px; margin:0 auto; border:1px solid var(--card-border);
+    background: linear-gradient(120deg, var(--olive-deep), var(--card-bg));
+    border-radius:4px; padding: 56px 6vw; text-align:center;
+  }
+  .cta-banner h2{ font-size: clamp(1.6rem, 4vw, 2.2rem); }
+  .cta-banner p{ margin:16px auto 30px; max-width:52ch; color: var(--text-dim); }
+
+  /* ---------- footer ---------- */
+  footer{
+    padding: 48px 6vw 32px; border-top:1px solid var(--hairline);
+    display:flex; flex-direction:column; gap:18px; align-items:center; text-align:center;
+  }
+  footer .brand-name{ font-size:1rem; }
+  footer p{ color: var(--text-dim); font-size:0.82rem; max-width:56ch; line-height:1.6; }
+  footer .fine{ font-family:'JetBrains Mono', monospace; font-size:0.68rem; color: var(--steel); }
+
+  /* ---------- coming soon modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; z-index:100;
+    background: rgba(10,12,8,0.72);
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .modal-overlay[hidden]{ display:none; }
+  .modal-box{
+    max-width: 420px; width:100%; text-align:center;
+    background: var(--bg-alt); border:1px solid var(--card-border);
+    border-radius:4px; padding: 40px 32px;
+    box-shadow: 0 24px 60px var(--shadow);
+  }
+  .modal-box .eyebrow{ margin-bottom:16px; }
+  .modal-box h3{ font-size:1.4rem; }
+  .modal-box p{ margin: 16px 0 26px; color: var(--text-dim); line-height:1.6; font-size:0.95rem; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 980px){
+    nav.links{ display:none; }
+    .pillars{ grid-template-columns: 1fr; }
+    .hub-grid{ grid-template-columns: repeat(2, 1fr); }
+    .tags-row{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px){
+    .hub-grid{ grid-template-columns: 1fr; }
+    .tags-row{ grid-template-columns: 1fr; }
+    header{ padding:16px 5vw; }
+  }
+</style>
+</head>
+<body data-theme="dark">
+<div class="texture"></div>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <img class="brand-mark" src="logo.png" alt="Army Hub logo">
+      <div class="brand-name">ARMY <b>HUB</b></div>
+    </div>
+    <nav class="links">
+      <a href="#mission">Mission</a>
+      <a href="#hub">The Hub</a>
+      <a href="#staff">Command Staff</a>
+      <a href="#join">Join</a>
+    </nav>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme"></button>
+      <button class="btn btn-primary" data-action="coming-soon">Enter Army Hub</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">S2 · REALISM DIVISION</div>
+    <h1>Forge the <span class="accent">Next</span> Generation</h1>
+    <p class="sub">A military role-play community built to teach players, honestly and respectfully, how service, structure, and teamwork really work. No fantasy. No arcade shortcuts. Just the real thing, simulated with care.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary" data-action="coming-soon">Enter Army Hub</button>
+      <a href="#mission" class="btn btn-ghost">Read Our Mission</a>
+    </div>
+    <div class="hero-tags">
+      <span><span class="dot"></span>TRAINING-FIRST DESIGN</span>
+      <span><span class="dot"></span>RANK-BASED PROGRESSION</span>
+      <span><span class="dot"></span>COMMUNITY-RUN OPERATIONS</span>
+    </div>
+  </section>
+
+  <section id="mission">
+    <div class="section-head">
+      <div class="mission-emblem-frame">
+        <img src="mission-emblem.png" alt="Army Hub emblem">
+      </div>
+      <div class="eyebrow">OUR MISSION</div>
+      <h2>Teach it right, or don't teach it</h2>
+      <p>Army Hub exists so younger players can understand military life, discipline, chain of command, and camaraderie, through role-play grounded in respect for the people who actually serve.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="num">PILLAR 01</div>
+        <h3>Realism</h3>
+        <p>Ranks, drills, and operations modeled on real structure, not Hollywood shortcuts, so every session teaches something true.</p>
+      </div>
+      <div class="pillar">
+        <div class="num">PILLAR 02</div>
+        <h3>Respect</h3>
+        <p>We role-play the discipline and duty of service without glorifying violence, honoring the people this game is inspired by.</p>
+      </div>
+      <div class="pillar">
+        <div class="num">PILLAR 03</div>
+        <h3>Readiness</h3>
+        <p>Every recruit starts in training. Rank is earned through participation, leadership, and showing up for the squad.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="hub">
+    <div class="section-head">
+      <div class="eyebrow">INSIDE THE HUB</div>
+      <h2>Everything a recruit needs</h2>
+      <p>One command center for training, rank, live operations, and the barracks where the community actually lives.</p>
+    </div>
+    <div class="hub-grid">
+      <div class="hub-card">
+        <svg class="hub-icon" viewBox="0 0 40 40" fill="none"><path d="M8 30 L20 8 L32 30 Z" stroke="var(--brass)" stroke-width="2.5" fill="none"/><path d="M14 24 L26 24" stroke="var(--brass)" stroke-width="2"/></svg>
+        <h3>Training Grounds</h3>
+        <p>Boot-camp style onboarding that walks new recruits through basics before they ever join an operation.</p>
+      </div>
+      <div class="hub-card">
+        <svg class="hub-icon" viewBox="0 0 40 40" fill="none"><path d="M20 6 L24 16 L34 16 L26 22 L29 33 L20 26 L11 33 L14 22 L6 16 L16 16 Z" stroke="var(--brass)" stroke-width="2" fill="none"/></svg>
+        <h3>Rank Progression</h3>
+        <p>A transparent ladder from Private to Command Staff, earned through drill attendance and leadership.</p>
+      </div>
+      <div class="hub-card">
+        <svg class="hub-icon" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="var(--brass)" stroke-width="2"/><path d="M20 10 V20 L27 24" stroke="var(--brass)" stroke-width="2"/></svg>
+        <h3>Live Operations</h3>
+        <p>Scheduled squad-based missions run by staff, briefed and debriefed like the real thing.</p>
+      </div>
+      <div class="hub-card">
+        <svg class="hub-icon" viewBox="0 0 40 40" fill="none"><circle cx="13" cy="16" r="5" stroke="var(--brass)" stroke-width="2"/><circle cx="27" cy="16" r="5" stroke="var(--brass)" stroke-width="2"/><path d="M4 32 C4 24 10 22 13 22 C16 22 22 24 22 32 M18 32 C18 24 24 22 27 22 C30 22 36 24 36 32" stroke="var(--brass)" stroke-width="2" fill="none"/></svg>
+        <h3>Community Barracks</h3>
+        <p>The off-duty space: voice channels, events, and squad chat where the community actually bonds.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="staff">
+    <div class="section-head">
+      <div class="eyebrow">COMMAND STAFF</div>
+      <h2>Who's running the hub</h2>
+      <p>Four people building and moderating Army Hub day to day.</p>
+    </div>
+    <div class="tags-row">
+      <div class="tag">
+        <div class="role">Founder · Owner &amp; Dev</div>
+        <div class="name">Tommy Gurro</div>
+        <hr>
+        <div class="serial">HUB · CMD · 001</div>
+      </div>
+      <div class="tag">
+        <div class="role">Co-Owner</div>
+        <div class="name">jaxon39959</div>
+        <hr>
+        <div class="serial">HUB · CMD · 002</div>
+      </div>
+      <div class="tag">
+        <div class="role">Core Team</div>
+        <div class="name">Silverback</div>
+        <hr>
+        <div class="serial">HUB · OPS · 003</div>
+      </div>
+      <div class="tag">
+        <div class="role">Core Team</div>
+        <div class="name">Mr. White</div>
+        <hr>
+        <div class="serial">HUB · OPS · 004</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="join">
+    <div class="cta-banner">
+      <h2>Ready to report for duty?</h2>
+      <p>Recruits start in Training Grounds. No experience needed, just a willingness to show up and take it seriously.</p>
+      <button class="btn btn-primary" data-action="coming-soon">Enter Army Hub</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="brand-name">ARMY <b style="color:var(--brass)">HUB</b></div>
+    <p>A fan-run military role-play community built for education and respect. Army Hub is not affiliated with, endorsed by, or sponsored by the U.S. Army, U.S. Marine Corps, or any branch of the armed forces.</p>
+    <div class="fine">© 2026 ARMY HUB · BUILT BY THE COMMAND STAFF</div>
+  </footer>
+
+  <div class="modal-overlay" id="comingSoonModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="eyebrow">STATUS</div>
+      <h3 id="modalTitle">Under Development</h3>
+      <p>The Army Hub is still being built by the command staff. Check back soon, recruit.</p>
+      <button class="btn btn-primary" id="closeModal">Close</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const body = document.body;
+  toggle.addEventListener('click', () => {
+    const isLight = body.getAttribute('data-theme') === 'light';
+    body.setAttribute('data-theme', isLight ? 'dark' : 'light');
+  });
+
+  const modal = document.getElementById('comingSoonModal');
+  const closeModal = document.getElementById('closeModal');
+
+  document.querySelectorAll('[data-action="coming-soon"]').forEach(btn => {
+    btn.addEventListener('click', () => { modal.hidden = false; });
+  });
+  closeModal.addEventListener('click', () => { modal.hidden = true; });
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.hidden = true; });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.hidden = true; });
+</script>
+</body>
+</html>
