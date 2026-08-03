@@ -596,11 +596,40 @@
   const modal = document.getElementById('comingSoonModal');
   const closeModal = document.getElementById('closeModal');
 
-  const correctCode = 'US_ARMY_2026_FAILED';
+  const expectedHash = 'fedc56946b07dba66031f38e3b9938c2b0d71236f2858f6f3d703acdb99b4988';
 
-  gateForm.addEventListener('submit', (e) => {
+  async function verifyGate(code) {
+    const normalized = code.trim().toUpperCase();
+    if (!normalized) return false;
+
+    try {
+      const challengeRes = await fetch('/api/access-challenge');
+      const { nonce } = await challengeRes.json();
+      const response = await fetch('/api/verify-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nonce, response: normalized })
+      });
+      const result = await response.json();
+      if (result.ok) return true;
+    } catch (error) {
+      // fall back to the hidden hash check below when no backend is available
+    }
+
+    try {
+      const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalized));
+      const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      return hashHex === expectedHash;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  gateForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (gateInput.value.trim().toUpperCase() === correctCode) {
+    const code = gateInput.value;
+    const ok = await verifyGate(code);
+    if (ok) {
       gate.hidden = true;
       gateInput.value = '';
     } else {
