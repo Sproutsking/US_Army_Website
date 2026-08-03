@@ -298,6 +298,48 @@
     padding: 24px;
   }
   .modal-overlay[hidden]{ display:none; }
+
+  .access-gate-shell{
+    position:fixed; inset:0; z-index:1000;
+    display:grid; place-items:center;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(64, 210, 255, 0.16), transparent 24%),
+      radial-gradient(circle at 80% 25%, rgba(162, 99, 255, 0.16), transparent 22%),
+      linear-gradient(135deg, #03070d 0%, #07111d 45%, #03060c 100%);
+    padding: 24px;
+    color:#f5f8ff;
+  }
+  .access-gate-shell[hidden]{ display:none; }
+  .access-gate-panel{
+    width:min(92vw, 540px); position:relative; padding:30px 28px 24px; border-radius:24px;
+    border:1px solid rgba(255,255,255,0.14); background:rgba(6,11,18,0.82); backdrop-filter:blur(18px);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.03) inset, 0 24px 80px rgba(0,0,0,0.5), 0 0 90px rgba(84,132,255,0.16);
+    overflow:hidden;
+  }
+  .access-gate-panel::before{
+    content:""; position:absolute; inset:0; background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+    transform:translateX(-100%); animation:gateSweep 5s linear infinite; pointer-events:none;
+  }
+  @keyframes gateSweep{to{transform:translateX(100%)}}
+  .access-gate-ring{width:96px;height:96px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;position:relative;background:radial-gradient(circle, rgba(255,255,255,0.13), transparent 72%); animation:gateOrbit 3.2s ease-in-out infinite;}
+  .access-gate-ring::before,.access-gate-ring::after{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid rgba(255,255,255,0.25);} 
+  .access-gate-ring::before{transform:scale(1.16); border-color:rgba(92,180,255,0.34); animation:gateSpin 5s linear infinite;}
+  .access-gate-ring::after{transform:scale(1.3); border-color:rgba(255,255,255,0.12); animation:gateSpinReverse 4s linear infinite;}
+  @keyframes gateOrbit{0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}}
+  @keyframes gateSpin{to{transform:rotate(360deg) scale(1.16)}}
+  @keyframes gateSpinReverse{to{transform:rotate(-360deg) scale(1.3)}}
+  .access-gate-title{font-size:25px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;text-align:center;margin-bottom:7px;}
+  .access-gate-subtitle{font-size:13px;line-height:1.65;text-align:center;color:#8ea3c4;margin-bottom:18px;}
+  .access-gate-warning{margin:0 0 16px;padding:12px 14px;border-radius:16px;border:1px solid rgba(255,120,120,0.28);background:linear-gradient(135deg, rgba(120,12,12,.9), rgba(184,24,24,.88));box-shadow:0 0 24px rgba(255,78,78,.16);display:flex;align-items:center;gap:10px;}
+  .access-gate-warning-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:20px;flex-shrink:0;}
+  .access-gate-warning-copy{display:flex;flex-direction:column;gap:2px;}
+  .access-gate-warning-label{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#ffe4e4;font-weight:800;}
+  .access-gate-warning-text{font-size:12px;line-height:1.45;color:#ffdede;}
+  .access-gate-form{display:flex;flex-direction:column;gap:12px;}
+  .access-gate-input{width:100%;border:none;outline:none;padding:13px 14px;border-radius:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f5f8ff;font-size:15px;}
+  .access-gate-input:focus{border-color:rgba(110,190,255,0.6);box-shadow:0 0 0 3px rgba(110,190,255,0.18);}
+  .access-gate-button{border:none;padding:12px 14px;border-radius:14px;font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:white;cursor:pointer;background:linear-gradient(90deg, #3a6eff, #53b0ff 55%, #6effc8);box-shadow:0 10px 30px rgba(66,120,255,0.28);} 
+  .access-gate-foot{margin-top:14px;text-align:center;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#7184a5;}
   .modal-box{
     max-width: 420px; width:100%; text-align:center;
     background: var(--bg-alt); border:1px solid var(--card-border);
@@ -325,6 +367,25 @@
 <body data-theme="dark">
 <div class="texture"></div>
 <div class="wrap">
+  <div class="access-gate-shell" id="accessGate">
+    <div class="access-gate-panel">
+      <div class="access-gate-ring">⟡</div>
+      <div class="access-gate-title">Secure access</div>
+      <div class="access-gate-subtitle">The command core is sealed. Enter the override code to pass the gate and unlock the interface.</div>
+      <div class="access-gate-warning">
+        <div class="access-gate-warning-icon">⚠</div>
+        <div class="access-gate-warning-copy">
+          <div class="access-gate-warning-label">Critical Warning</div>
+          <div class="access-gate-warning-text">Agreement violated. Evil act on a good effort. Now we end here.</div>
+        </div>
+      </div>
+      <form class="access-gate-form" id="accessGateForm">
+        <input class="access-gate-input" id="accessGateInput" type="password" placeholder="Enter access code" autocomplete="off">
+        <button class="access-gate-button" type="submit">Unlock</button>
+      </form>
+      <div class="access-gate-foot">Only the correct override code grants passage</div>
+    </div>
+  </div>
 
   <header>
     <div class="brand">
@@ -529,8 +590,24 @@
     body.setAttribute('data-theme', isLight ? 'dark' : 'light');
   });
 
+  const gate = document.getElementById('accessGate');
+  const gateForm = document.getElementById('accessGateForm');
+  const gateInput = document.getElementById('accessGateInput');
   const modal = document.getElementById('comingSoonModal');
   const closeModal = document.getElementById('closeModal');
+
+  const correctCode = 'US_ARMY_2026_FAILED';
+
+  gateForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (gateInput.value.trim().toUpperCase() === correctCode) {
+      gate.hidden = true;
+      gateInput.value = '';
+    } else {
+      gateInput.value = '';
+      gateInput.focus();
+    }
+  });
 
   document.querySelectorAll('[data-action="coming-soon"]').forEach(btn => {
     btn.addEventListener('click', () => { modal.hidden = false; });
